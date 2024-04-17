@@ -1,29 +1,37 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2024-04-16T17:16:19.072Z",
+  "__export_date": "2024-04-17T16:48:19.088Z",
   "__export_source": "insomnia.desktop.app:v2023.4.0",
   "resources": [
     {
-      "_id": "req_6db9a852f4714631b53a5ebeebc5da1a",
+      "_id": "req_2e19de7b5fee4b0a8fdb54b1c864b16f",
       "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
-      "modified": 1713208861602,
-      "created": 1713199615095,
+      "modified": 1713364192454,
+      "created": 1713199854093,
       "url": "http://127.0.0.1:8000/rustaceans",
-      "name": "get ALL rustacians",
+      "name": "create rustacian",
       "description": "",
-      "method": "GET",
-      "body": {},
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"Loui de Tunes\",\n\t\"email\": \"marley2deletep@snap.com\"\n}\n"
+      },
       "parameters": [],
-      "headers": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
       "authentication": {
         "type": "basic",
         "useISO88591": false,
         "disabled": false,
-        "username": "fooy",
-        "password": "bar"
+        "username": "sdfasdfgsdfg",
+        "password": "sfgsdfgsdfg"
       },
-      "metaSortKey": -1713199687711.5,
+      "metaSortKey": -1713199687686.5,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -44,11 +52,40 @@
       "_type": "workspace"
     },
     {
+      "_id": "req_6db9a852f4714631b53a5ebeebc5da1a",
+      "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
+      "modified": 1713365215597,
+      "created": 1713199615095,
+      "url": "http://127.0.0.1:8000/rustaceans",
+      "name": "get ALL rustacians",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "basic",
+        "useISO88591": false,
+        "disabled": false,
+        "username": "fooy",
+        "password": "bar"
+      },
+      "metaSortKey": -1713199687674,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
       "_id": "req_6b045fa9979d4844be4500f22d72c370",
       "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
-      "modified": 1713208216472,
+      "modified": 1713366800225,
       "created": 1713199760328,
-      "url": "http://127.0.0.1:8000/rustaceans/1",
+      "url": "http://127.0.0.1:8000/rustaceans/2",
       "name": "get rustacian by ID",
       "description": "",
       "method": "GET",
@@ -58,7 +95,7 @@
       "authentication": {
         "type": "basic",
         "useISO88591": false,
-        "disabled": true,
+        "disabled": false,
         "username": "ASDA",
         "password": "ASDASdAS"
       },
@@ -73,54 +110,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_2e19de7b5fee4b0a8fdb54b1c864b16f",
-      "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
-      "modified": 1713208229333,
-      "created": 1713199854093,
-      "url": "http://127.0.0.1:8000/rustaceans",
-      "name": "create rustacian",
-      "description": "",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"id\": 3,\n\t\"name\": \"John Doe\",\n\t\"email\": \"john@doe.com\"\n}\n"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {
-        "type": "basic",
-        "useISO88591": false,
-        "disabled": false,
-        "username": "sdfasdfgsdfg",
-        "password": "sfgsdfgsdfg"
-      },
-      "metaSortKey": -1713199687611.5,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
       "_id": "req_0df3369d2f3d4b1abf09ac825d027c45",
       "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
-      "modified": 1713208243711,
+      "modified": 1713367116909,
       "created": 1713199931831,
-      "url": "http://127.0.0.1:8000/rustaceans/3",
+      "url": "http://127.0.0.1:8000/rustaceans/15",
       "name": "update rustacian",
       "description": "",
       "method": "PUT",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n\t\"id\": 3,\n\t\"name\": \"John Doe\",\n\t\"email\": \"john@doe.com\"\n}\n"
+        "text": "{\n\t\"id\": 3,\n\t\"name\": \"John Doe UPD+\",\n\t\"email\": \"john@doe.com UPD+\"\n}\n"
       },
       "parameters": [],
       "headers": [
@@ -149,9 +149,9 @@
     {
       "_id": "req_fd0e167ba08b4e14a31d3c94c3f4965e",
       "parentId": "wrk_41164b4b0b1e4e30ae65fe07c9bcaad3",
-      "modified": 1713208386318,
+      "modified": 1713365999119,
       "created": 1713200039628,
-      "url": "http://127.0.0.1:8000/rustaceans/3",
+      "url": "http://127.0.0.1:8000/rustaceans/1345",
       "name": "delete rustacian",
       "description": "",
       "method": "DELETE",

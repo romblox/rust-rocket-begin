@@ -5,8 +5,11 @@ mod repository;
 
 #[macro_use] extern crate rocket;
 
+use diesel::result::Error::NotFound;
+use rocket::http::Status;
 use rocket::serde::json::{Value, json, Json};
 use rocket::response::status;
+use rocket::response::status::Custom;
 use rocket_sync_db_pools::database;
 use auth::BasicAuth;
 use models::RustaceanData;
@@ -17,49 +20,57 @@ use crate::repository::SqliteRepository;
 struct DbConn(diesel::SqliteConnection);
 
 #[get("/rustaceans")]
-async fn get_rustaceans(_auth: BasicAuth, db: DbConn) -> Value {
+async fn get_rustaceans(_auth: BasicAuth, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(|c| {
-        let result = SqliteRepository::get_all_rustaceans(c)
-            .expect("DB error while get all rustaceans");
-        json!(result)
+        SqliteRepository::get_all_rustaceans(c)
+            .map(|rustaceans| json!(rustaceans))
+            .map_err(|err| Custom(Status::InternalServerError, json!(err.to_string())))
     }).await
 }
 
 #[get("/rustaceans/<id>")]
-async fn view_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> Value {
+async fn view_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
-        let result = SqliteRepository::get_rustacean(c, id)
-            .expect("DB error while get rustacean by id");
-        json!(result)
+        SqliteRepository::get_rustacean(c, id)
+            .map(|rustaceans| json!(rustaceans))
+            .map_err(|err|
+                match err {
+                    NotFound => Custom(Status::NotFound, json!(err.to_string())),
+                    _ => Custom(Status::InternalServerError, json!(err.to_string())),
+                }
+            )
     }).await
 }
 
 #[post("/rustaceans", format = "json", data = "<new_rustacean>")]
-async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<RustaceanData>) -> Value {
+async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<RustaceanData>) -> Result<Value, Custom<Value>> {
     db.run(|c| {
-        let result = SqliteRepository::create_rustacean(c, new_rustacean.into_inner())
-            .expect("DB error while inserting new rustacean");
-        json!(result)
+        SqliteRepository::create_rustacean(c, new_rustacean.into_inner())
+            .map(|rustacean| json!(rustacean))
+            .map_err(|err| Custom(Status::BadRequest, json!(err.to_string())))
     }).await
 }
 
-#[put("/rustaceans/<id>", format = "json", data = "<new_rustacean>")]
-async fn update_rustacean(id: i32, _auth: BasicAuth, db: DbConn, new_rustacean: Json<RustaceanData>) -> Value {
+#[put("/rustaceans/<id>", format = "json", data = "<updated_rustacean>")]
+async fn update_rustacean(id: i32, _auth: BasicAuth, db: DbConn, updated_rustacean: Json<RustaceanData>) -> Result<Value, Custom<Value>> {
     db.run(move |c| {
-        let result = SqliteRepository::update_rastacean(c, id, new_rustacean.into_inner())
-            .expect("DB error while inserting new rustacean");
-        json!(result)
+        SqliteRepository::update_rastacean(c, id, updated_rustacean.into_inner())
+            .map(|rustacean| json!(rustacean))
+            .map_err(|err|
+                match err {
+                    NotFound => Custom(Status::NotFound, json!(err.to_string())),
+                    _ => Custom(Status::InternalServerError, json!(err.to_string())),
+                })
     }).await
 }
 
 #[delete("/rustaceans/<id>")]
-async fn delete_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> status::NoContent {
+async fn delete_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> Result<status::NoContent, Custom<Value>> {
     db.run(move |c| {
-        let result = SqliteRepository::delete_rustacean(c, id)
-            .expect("DB error while deleting rustacean");
-        json!(result)
-    }).await;
-    status::NoContent
+        SqliteRepository::delete_rustacean(c, id)
+            .map(|_| status::NoContent)
+            .map_err(|err| Custom(Status::InternalServerError, json!(err.to_string())))
+    }).await
 }
 
 #[catch(404)]

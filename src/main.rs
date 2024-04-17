@@ -4,11 +4,14 @@ mod auth;
 
 use rocket::serde::json::{Value, json};
 use rocket::response::status;
+use rocket_sync_db_pools::database;
 use auth::BasicAuth;
 
+#[database("sqlite")]
+struct DbConn(diesel::SqliteConnection);
 
 #[get("/rustaceans")]
-fn get_rustaceans(_auth: BasicAuth) -> Value {
+fn get_rustaceans(_auth: BasicAuth, _db: DbConn) -> Value {
     json!([{ "id": 1, "name": "John Doe" }, { "id": 2, "name": "John Doe again" }])
 }
 #[get("/rustaceans/<id>")]
@@ -54,6 +57,7 @@ async fn main() {
             not_found,
             unauthorized,
         ])
+        .attach(DbConn::fairing())
         .launch()
         .await;
 }

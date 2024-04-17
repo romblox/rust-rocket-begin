@@ -10,7 +10,7 @@ use rocket::response::status;
 use rocket_sync_db_pools::database;
 use auth::BasicAuth;
 use schema::rustaceans;
-use models::{Rustacean, NewRustacean};
+use models::{Rustacean, RustaceanData};
 
 
 #[database("sqlite")]
@@ -37,7 +37,7 @@ async fn view_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> Value {
     }).await
 }
 #[post("/rustaceans", format = "json", data = "<new_rustacean>")]
-async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<NewRustacean>) -> Value {
+async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<RustaceanData>) -> Value {
     db.run(|c| {
         let result = diesel::insert_into(rustaceans::table)
             .values(new_rustacean.into_inner())
@@ -45,9 +45,14 @@ async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<NewR
         json!(result)
     }).await
 }
-#[put("/rustaceans/<id>", format = "json")]
-fn update_rustacean(id: i32, _auth: BasicAuth) -> Value {
-    json!({"id": id, "name": "John Doe", "email": "john@doe.com"})
+#[put("/rustaceans/<id>", format = "json", data = "<new_rustacean>")]
+async fn update_rustacean(id: i32, _auth: BasicAuth, db: DbConn, new_rustacean: Json<RustaceanData>) -> Value {
+    db.run(move |c| {
+        let result = diesel::update(rustaceans::table.find(id))
+            .set(new_rustacean.into_inner())
+            .execute(c).expect("DB error while inserting new rustacean");
+        json!(result)
+    }).await
 }
 #[delete("/rustaceans/<_id>")]
 fn delete_rustacean(_id: i32, _auth: BasicAuth) -> status::NoContent {

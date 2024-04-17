@@ -10,6 +10,8 @@ use rocket::http::Status;
 use rocket::serde::json::{Value, json, Json};
 use rocket::response::status;
 use rocket::response::status::Custom;
+use rocket::{Build, Rocket};
+use rocket::fairing::AdHoc;
 use rocket_sync_db_pools::database;
 use auth::BasicAuth;
 use models::RustaceanData;
@@ -89,6 +91,19 @@ fn unprocessable() -> Value {
 }
 
 
+async fn run_db_migrations(rocket: Rocket<Build>) -> Rocket<Build> {
+    use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+    const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+    DbConn::get_one(&rocket)
+        .await
+        .expect("Unable to retrieve connection before apply migrations")
+        .run(|c| {
+            c.run_pending_migrations(MIGRATIONS).expect("Migrations failed");
+        })
+        .await;
+    rocket
+}
+
 #[rocket::main]
 async fn main() {
     let _ = rocket::build()
@@ -106,6 +121,7 @@ async fn main() {
             unprocessable,
         ])
         .attach(DbConn::fairing())
+        .attach(AdHoc::on_ignite("Diesel migrations", run_db_migrations))
         .launch()
         .await;
 }

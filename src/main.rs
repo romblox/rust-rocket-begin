@@ -28,8 +28,13 @@ async fn get_rustaceans(_auth: BasicAuth, db: DbConn) -> Value {
     }).await
 }
 #[get("/rustaceans/<id>")]
-fn view_rustacean(id: i32, _auth: BasicAuth) -> Value {
-    json!({"id": id, "name": "John Doe", "email": "john@doe.com"})
+async fn view_rustacean(id: i32, _auth: BasicAuth, db: DbConn) -> Value {
+    db.run(move |c| {
+        let result = rustaceans::table.find(id)
+            .get_result::<Rustacean>(c)
+            .expect("DB error while get rustacean by id");
+        json!(result)
+    }).await
 }
 #[post("/rustaceans", format = "json", data = "<new_rustacean>")]
 async fn create_rustacean(_auth: BasicAuth, db: DbConn, new_rustacean: Json<NewRustacean>) -> Value {
